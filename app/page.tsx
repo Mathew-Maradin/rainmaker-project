@@ -36,6 +36,7 @@ export default function Home() {
       const result = await getQuote(fromCurrency, toCurrency, amount);
       console.log(result);
       setQuote({ value1: result.swapBalance, value2: result.slippagePercent });
+      setToAmount(result.swapBalance)
     } catch (error) {
       console.error("Error fetching quote:", error);
     }
@@ -48,7 +49,7 @@ export default function Home() {
       {/* <Search /> */}
 
       <div className="bg-slate-800">
-        <div className="flex justify-center my-10">
+        <div className="flex justify-center mt-8 mb-3">
           <div className="pr-4">
             <input
               type="number"
@@ -61,8 +62,11 @@ export default function Home() {
               onChange={(e) => setFromCurrency(e.target.value)}
               className="p-2 border rounded ml-2"
             >
-              <option value="USDT">USDT</option>
               <option value="ORBS">ORBS</option>
+              <option value="USDT">USDT</option>
+              <option value="TEL">TEL</option>
+              <option value="WETH">CHAMP</option>
+              <option value="BLOK">BLOK</option>
             </select>
           </div>
           <div className="pl-4">
@@ -76,8 +80,11 @@ export default function Home() {
               value={toCurrency}
               className="p-2 border rounded ml-2"
             >
-              <option value="BORBSTC">ORBS</option>
+              <option value="ORBS">ORBS</option>
               <option value="USDT">USDT</option>
+              <option value="TEL">TEL</option>
+              <option value="WETH">CHAMP</option>
+              <option value="BLOK">BLOK</option>
             </select>
           </div>
         </div>
@@ -91,7 +98,7 @@ export default function Home() {
             Get Quote
           </button>
           {quote.value1 !== null && (
-            <div className="mt-4 border border-gray-600 rounded-lg p-4">
+            <div className="mt-4 border border-gray-600 rounded-lg p-4 mt-8">
               <h1 className="text-2xl font-semibold">{quote.value1 + " " + toCurrency}</h1>
               <p className="text-sm text-center">Slippage: {quote.value2 * 100}%</p>
             </div>
