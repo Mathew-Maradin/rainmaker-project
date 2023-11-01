@@ -1,9 +1,9 @@
-import { ChainId, Fetcher, Route, Trade, TokenAmount, TradeType} from 'quickswap-sdk'
-import { BigNumber, providers, BigintIsh } from "ethers";
-import { ETH, Token, USDC } from "@/tokens";
+import { ChainId, Fetcher, Route, Trade, TokenAmount, TradeType, Token, Pair} from 'quickswap-sdk'
+import { BigNumber, providers, BigintIsh} from "ethers"; 
+import { ETH, USDC } from "@/tokens";
 
 export type Quote = {
-  swapBalance: any;
+  swapBalance: number;
   slippagePercent: number;
 };
 
@@ -22,31 +22,31 @@ const provider = new providers.JsonRpcProvider(alchemy)
 export async function getQuote(
   fromToken: string,
   toToken: string,
-  fromAmount: number
+  fromAmount: BigintIsh
 ): Promise<Quote> {
   const FROM_ADDRESS = Token_Addresses[fromToken]
   const TO_ADDRESS = Token_Addresses[toToken]
 
   const FROM = await Fetcher.fetchTokenData(137, FROM_ADDRESS, provider)
   const TO = await Fetcher.fetchTokenData(137, TO_ADDRESS, provider)
-  const pair = await Fetcher.fetchPairData(FROM, TO, provider);
+
+  const pair = new Pair(new TokenAmount(FROM, fromAmount), new TokenAmount(TO, fromAmount))
   const route = new Route([pair], TO)
+  const trade = new Trade(route, new TokenAmount(TO, fromAmount), TradeType.EXACT_INPUT)
 
-  console.log(route.midPrice.toSignificant(10))
-  console.log(fromAmount)
-  const fromAmountBigint: BigintIsh = BigNumber.from(fromAmount);
-
-  // const trade = new Trade(route, new TokenAmount(FROM, fromAmountBigint), TradeType.EXACT_INPUT);
-  // console.log(trade.outputAmount.toSignificant(6))
-
-  const swapBalance = route.midPrice.toSignificant(10) //BigNumber.from(route.midPrice);
-
+  const swapBalance: number = parseFloat(trade.outputAmount.toExact());
   const slippagePercent = 0.01;
-
-  console.info(`Slippage: ${slippagePercent * 100}%`);
+  // const slippagePercent = ((actualOutputAmount - expectedOutputAmount) / expectedOutputAmount) * 100;
+  
+  // Inital Code that I wrote to perform the conversion on just 1 token
+  // const FROM = await Fetcher.fetchTokenData(137, FROM_ADDRESS, provider)
+  // const TO = await Fetcher.fetchTokenData(137, TO_ADDRESS, provider)
+  // const pair = await Fetcher.fetchPairData(FROM, TO, provider);
+  // const route = new Route([pair], TO)
+  // const swapBalance = route.midPrice.toSignificant(10);
 
   return {
     swapBalance,
-    slippagePercent,
+    slippagePercent
   };
 }

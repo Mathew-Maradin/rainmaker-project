@@ -7,7 +7,7 @@ const Header = () => {
       <nav className="bg-slate-900 border-slate-900 p-4">
         <div className="max-w-screen-xl flex items-center justify-between mx-auto">
           <a href="/" className="flex items-center">
-            <Image src={svgImage} alt="Rainmaker Logo" width={250} height={250} />
+            <Image src={svgImage} priority={true} alt="Rainmaker Logo" width={250} />
           </a>
         </div>
       </nav>
