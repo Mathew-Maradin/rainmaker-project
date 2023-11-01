@@ -1,29 +1,46 @@
-import { BigNumber } from "ethers";
+import { ChainId, Fetcher, Route} from 'quickswap-sdk'
+import { BigNumber, providers } from "ethers";
 import { ETH, Token, USDC } from "@/tokens";
 
 export type Quote = {
-  swapBalance: BigNumber;
+  swapBalance: any;
   slippagePercent: number;
 };
 
+const Token_Addresses = {
+  "USDT": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+  "ORBS": "0x82a0E6c02b91eC9f6ff943C0A933c03dBaa19689"
+}
+
 export async function getQuote(
-  fromToken: Token,
-  toToken: Token,
-  fromAmount: BigNumber
+  fromToken: String,
+  toToken: String,
+  fromAmount: BigInteger
 ): Promise<Quote> {
-  console.info(
-    `Converting ${fromAmount.toString()} ${fromToken.symbol} to ${
-      toToken.symbol
-    }`
-  );
+  // console.info(
+  //   `Converting ${fromAmount.toString()} ${fromToken.symbol} to ${
+  //     toToken.symbol
+  //   }`
+  // );
+ 
+  const alchemy = "https://polygon-mainnet.g.alchemy.com/v2/Q4MUmW_mCYlqUIh7Gw1QHOXbBTttnDaj"
+  const provider = new providers.JsonRpcProvider(alchemy)
 
-  // Get the contract for a DEX.
+  console.log(fromToken)
+  console.log(toToken)
 
-  // Use ethers and the DEX contract to figure out how much TO_TOKEN you can get
-  // for the FROM_TOKEN.
+  const FROM_ADDRESS = Token_Addresses[fromToken]
+  const TO_ADDRESS = Token_Addresses[toToken]
+
+  const FROM = await Fetcher.fetchTokenData(137, FROM_ADDRESS, provider)
+  const TO = await Fetcher.fetchTokenData(137, TO_ADDRESS, provider)
+  const pair = await Fetcher.fetchPairData(FROM, TO, provider);
+  const route = new Route([pair], TO)
+
+  console.log(route.midPrice.toSignificant(10))
 
   // TODO:
-  const swapBalance = BigNumber.from("0");
+  const swapBalance = route.midPrice.toSignificant(10) //BigNumber.from(route.midPrice);
 
   console.info(
     `Estimated swap balance: ${swapBalance.toString()} ${toToken.symbol}`
