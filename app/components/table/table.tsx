@@ -1,7 +1,6 @@
 import React from 'react';
 
 const DarkThemeTable = () => {
-  // Sample data for the table
   const tableData = [
     { market: 'USDC/ORBS', basePrice: 100, volume24h: 10000 },
     { market: 'ORBS/USDC', basePrice: "$ 0.0413", volume24h: "$ 43,945.51" },
